@@ -1,28 +1,26 @@
 const PNG = require('fast-png');
-const math = require('mathjs');
-const Stream = require('stream').Duplex;
 const fs = require('fs')
 const { exec } = require('child_process')
 const m = require('./modules/complex-math');
-
 const Range = require('./modules/range');
 const HSVtoRGB = require('./modules/hsvtorgb');
 
 const width = 1920;
 const height = 1080;
-const maxIterations = 400;
+const maxIterations = 600;
 const boundary = 16;
 
-
 const aspectRatio = width / height;
-const rangeVal = 1.3;
-const xOff = 0;
-const yOff = 0;
+
+const rangeVal = 0.02;
+const xOff = -1.05;
+const yOff = -0.1;
+const sides = 3;
 
 
 let now = Date.now();
 
-const range = new Range(aspectRatio, rangeVal)
+const range = new Range(aspectRatio, rangeVal, sides, xOff, yOff);
 
 let map = function (n, start1, stop1, start2, stop2) {
     return (n - start1) / (stop1 - start1) * (stop2 - start2) + start2;
@@ -35,45 +33,39 @@ let genColor = function (n) {
     return color;
 }
 
-range.offSet(xOff, yOff);
 fs.mkdirSync(`./output/${now}`);
 
-for (let quads = 0; quads < 4; quads++) {
+for (let quads = 0; quads < sides * sides; quads++) {
 
     let pngArr = [];
-    let xCurrentOff;
-    let yCurrentOff;
+    // switch (quads) {
+    //     case 0: {
+    //         xCurrentOff = -rangeVal;
+    //         yCurrentOff = -(rangeVal / aspectRatio);
+    //         break;
+    //     }
 
-    switch (quads) {
-        case 0: {
-            xCurrentOff = -rangeVal;
-            yCurrentOff = -(rangeVal / aspectRatio);
-            break;
-        }
+    //     case 1: {
+    //         xCurrentOff = 2 * rangeVal;
+    //         yCurrentOff = 0;
+    //         break;
+    //     }
+    //     case 2: {
+    //         xCurrentOff = 0;
+    //         yCurrentOff = 2 * rangeVal / aspectRatio;
+    //         break;
+    //     }
 
-        case 1: {
-            xCurrentOff = 2 * rangeVal;
-            yCurrentOff = 0;
-            break;
-        }
-        case 2: {
-            xCurrentOff = 0;
-            yCurrentOff = 2 * rangeVal / aspectRatio;
-            break;
-        }
+    //     case 3: {
+    //         xCurrentOff = -2 * rangeVal;
+    //         yCurrentOff = 0;
+    //         break;
+    //     }
+    // }
 
-        case 3: {
-            xCurrentOff = -2 * rangeVal;
-            yCurrentOff = 0;
-            break;
-        }
-    }
+    range.calcOffset(quads);
 
-
-
-    range.offSet(xCurrentOff, yCurrentOff)
-
-    console.log(`Calculating ${maxIterations} iterations for ${width * height} pixels. ${quads + 1}/4`)
+    console.log(`Calculating ${maxIterations} iterations for ${width * height} pixels. ${quads + 1}/${sides * sides}`)
 
     for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
@@ -115,7 +107,7 @@ for (let quads = 0; quads < 4; quads++) {
     console.log('Image created');
 }
 
-exec(`node stitcher --folder ${now}`);
+exec(`node stitcher --folder ${now} --width ${width} --height ${height} --sides ${sides}`);
 
 
 
