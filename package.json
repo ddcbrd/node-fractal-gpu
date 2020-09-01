@@ -9,7 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "canvas": "^2.6.1",
+    "canvas-constructor": "^4.1.0",
     "fast-png": "^5.0.2",
-    "mathjs": "^7.2.0"
+    "mathjs": "^7.2.0",
+    "node-p5": "^1.0.3",
+    "yargs": "^15.4.1"
   }
 }
