@@ -20,12 +20,16 @@ module.exports = {
         let im = (num.im * den.re - num.re * den.im) / opDen;
         return { re: re, im: im }
     },
+    mult(z1, z2) {
+        let re = (z1.re * z2.re) - (z1.im * z2.im);
+        let im = (z1.re * z2.im) + (z2.re * z1.im);
+        return { re: re, im: im }
+    },
     add(z1, z2) {
         let re = z1.re + z2.re;
         let im = z1.im + z2.im;
         return { re: re, im: im }
     },
-
     sq(z) {
         let re = z.re * z.re - z.im * z.im;
         let im = 2 * z.re * z.im;
@@ -36,35 +40,41 @@ module.exports = {
     },
     pow(z, n) {
         if (n === 0) return { re: 1, im: 0 };
-        // let coeff = euler(n);
-        let coeff = eulerTriangle[n];
-        let im = 0;
-        let re = 0;
-        for (let i = 0; i < coeff.length; i++) {
-            let aP = coeff.length - i - 1;
-            let a = Math.pow(z.re, aP);
-            let b = Math.pow(z.im, i);
-
-            switch (i % 4) {
-                case 1: { //i^1 im
-                    im += coeff[i] * a * b
-                    break;
-                }
-                case 2: { //i^2 -re
-                    re += -1 * coeff[i] * a * b
-                    break;
-                }
-                case 3: { //i^3 -im
-                    im += -1 * coeff[i] * a * b
-                    break;
-                }
-                case 0: { //i^4 re
-                    re += coeff[i] * a * b
-                    break;
-                }
-            }
+        if (n === 1) return z;
+        let w = z;
+        for (let i = 1; i < n; i++) {
+            w = this.mult(z, w);
         }
-        return { re: re, im: im }
+        return w;
+        // let coeff = euler(n);
+        // let coeff = eulerTriangle[n];
+        // let im = 0;
+        // let re = 0;
+        // for (let i = 0; i < coeff.length; i++) {
+        //     let aP = coeff.length - i - 1;
+        //     let a = Math.pow(z.re, aP);
+        //     let b = Math.pow(z.im, i);
+
+        //     switch (i % 4) {
+        //         case 1: { //i^1 im
+        //             im += coeff[i] * a * b
+        //             break;
+        //         }
+        //         case 2: { //i^2 -re
+        //             re += -1 * coeff[i] * a * b
+        //             break;
+        //         }
+        //         case 3: { //i^3 -im
+        //             im += -1 * coeff[i] * a * b
+        //             break;
+        //         }
+        //         case 0: { //i^4 re
+        //             re += coeff[i] * a * b
+        //             break;
+        //         }
+        //     }
+        // }
+        // return { re: re, im: im }
     },
     sqrt(z) {
         let r = Math.sqrt(z.re * z.re + z.im * z.im);
@@ -75,8 +85,21 @@ module.exports = {
         let im = Math.sqrt(r) * Math.sin(angle / 2);
         return { re: re, im: im }
     },
-    eul(n) {
-        return euler(n);
+    exp(z) {
+        let mult = Math.exp(z.re);
+        let re = mult * Math.cos(z.im);
+        let im = mult * Math.sin(z.im);
+        return { re: re, im: im }
+    },
+    cos(z) {
+        let re = Math.cos(z.re) * Math.cosh(z.im);
+        let im = -Math.sin(z.re) * Math.sinh(z.im);
+        return { re: re, im: im }
+    },
+    sin(z) {
+        let re = Math.sin(z.re) * Math.cosh(z.im);
+        let im = -Math.cos(z.re) * Math.sinh(z.im);
+        return { re: re, im: im }
     }
 }
 

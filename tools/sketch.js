@@ -3,19 +3,21 @@ let img;
 const rangeVal = 2;
 const xOff = -1;
 const yOff = 0;
+const sides = 3;
 
-let x, y, newXr;
+let x, y, newXr, range;
 
 let AR;
 
 function preload() {
-    img = loadImage('../output/1598671840671/out-stitched.png')
+    img = loadImage('../output/1598997253371/out-stitched.png')
 }
 
 function setup() {
     createCanvas(img.width, img.height);
     AR = width / height;
-    newXr = rangeVal * 0.1;
+    range = rangeVal * sides;
+    newXr = range * 0.1;
 }
 
 function draw() {
@@ -25,9 +27,9 @@ function draw() {
     noFill();
     rectMode(CENTER);
 
-    let rectSide = map(newXr, 0, rangeVal, 0, width);
-    x = map(mouseX, 0, width, -rangeVal, rangeVal) + xOff;
-    y = map(mouseY, 0, height, -rangeVal / AR, rangeVal / AR) + yOff;
+    let rectSide = map(newXr, 0, range, 0, width);
+    x = map(mouseX, 0, width, -range, range) + xOff;
+    y = map(mouseY, 0, height, -range / AR, range / AR) + yOff;
     line(mouseX, mouseY, width / 2, height / 2);
     rect(mouseX, mouseY, rectSide, rectSide / AR);
 }
@@ -38,7 +40,7 @@ function mouseClicked() {
 
 function mouseWheel(event) {
     event.preventDefault();
-    let inc = event.delta / 100000;
+    let inc = newXr * event.delta / 10000;
     newXr += inc;
 
 }

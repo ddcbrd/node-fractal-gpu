@@ -12,9 +12,9 @@ const boundary = 16;
 
 const aspectRatio = width / height;
 
-const rangeVal = 0.02;
-const xOff = -1.05;
-const yOff = -0.1;
+const rangeVal = 0.04851130044675554;
+const xOff = 0;
+const yOff = 0;
 const sides = 3;
 
 
@@ -27,9 +27,14 @@ let map = function (n, start1, stop1, start2, stop2) {
 }
 
 let genColor = function (n) {
-    let iteration = ((1 - Math.sqrt(n / (maxIterations + 1))) * 360);
-    let s = 1 - (n / maxIterations);
-    let color = HSVtoRGB(iteration, s, 1);
+    // let gs = Math.sqrt(n / maxIterations) * 65535;
+    let h = ((1 - Math.sqrt(n / (maxIterations + 1))) * 360);
+    let b = (n / maxIterations);
+    let s = 1 - b;
+    let color = HSVtoRGB(h, s, s);
+    // let color = {
+    //     r: gs, g: gs, b: gs
+    // }
     return color;
 }
 
@@ -38,31 +43,6 @@ fs.mkdirSync(`./output/${now}`);
 for (let quads = 0; quads < sides * sides; quads++) {
 
     let pngArr = [];
-    // switch (quads) {
-    //     case 0: {
-    //         xCurrentOff = -rangeVal;
-    //         yCurrentOff = -(rangeVal / aspectRatio);
-    //         break;
-    //     }
-
-    //     case 1: {
-    //         xCurrentOff = 2 * rangeVal;
-    //         yCurrentOff = 0;
-    //         break;
-    //     }
-    //     case 2: {
-    //         xCurrentOff = 0;
-    //         yCurrentOff = 2 * rangeVal / aspectRatio;
-    //         break;
-    //     }
-
-    //     case 3: {
-    //         xCurrentOff = -2 * rangeVal;
-    //         yCurrentOff = 0;
-    //         break;
-    //     }
-    // }
-
     range.calcOffset(quads);
 
     console.log(`Calculating ${maxIterations} iterations for ${width * height} pixels. ${quads + 1}/${sides * sides}`)
@@ -79,8 +59,9 @@ for (let quads = 0; quads < sides * sides; quads++) {
 
             for (; i < maxIterations; i++) {
                 //Fractal definition
-                z = m.divide(z, m.sq(c));
-                z = m.add(m.sq(z), c);
+                z = m.exp(m.divide(m.pow(z, 3), m.pow(c, 3)));
+                // z = m.divide(z, m.sq(c));
+                // z = m.add(m.sq(z), c);
                 //
                 if (m.abs(z) > boundary) break;
             }

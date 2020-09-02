@@ -1,6 +1,6 @@
 const math = require('./modules/complex-math');
 
-let iterations = 4 * 1920 * 1080 * 500;
+let iterations = 1920 * 1080 * 600;
 
 let z = {
     re: 4,
@@ -12,8 +12,10 @@ let start = Date.now();
 // let arr = []
 
 for (let i = 0; i < iterations; i++) {
-    math.sq(z);
+    math.pow(z, 3);
 }
+// console.log(math.pow(z, 3));
+
 
 let finish = Date.now();
 
