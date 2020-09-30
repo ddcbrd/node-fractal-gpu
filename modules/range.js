@@ -2,7 +2,7 @@ class Range {
     constructor(ar, widthRange, sides, centerX, centerY) {
         this.aspectRatio = ar;
         this.sides = sides;
-        this.widthRange = widthRange;  //this is half of the actual widthRange
+        this.widthRange = widthRange;       //this is half of the actual widthRange
         this.heightRange = widthRange / ar; //this is half of the actual heightRange
         this.centerX = centerX;
         this.centerY = centerY;

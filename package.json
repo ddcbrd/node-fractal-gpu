@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "gpu": "node gputest.js"
   },
   "author": "",
   "license": "ISC",
@@ -15,5 +16,8 @@
     "mathjs": "^7.2.0",
     "node-p5": "^1.0.3",
     "yargs": "^15.4.1"
+  },
+  "devDependencies": {
+    "gpu.js": "^2.10.0"
   }
 }
