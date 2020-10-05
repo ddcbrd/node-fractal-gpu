@@ -4,6 +4,7 @@ const fs = require('fs')
 const Range = require('./modules/range');
 const { spawn, exec } = require('child_process');
 const { exit } = require('process');
+const { SingleBar, Presets } = require('cli-progress')
 
 //GENERATION CONSTANTS
 const width = 1920
@@ -16,7 +17,7 @@ const xOff = 0
 const yOff = 0
 const sides = 1
 
-const nImages = 30 * 40
+const nImages = 30 * 2
 const aspectRatio = width / height
 const range = new Range(aspectRatio, rangeVal, sides, xOff, yOff);
 
@@ -130,7 +131,7 @@ const gpu = new GPU()
 const juliaSet = gpu.createKernel(function (xRangeStart, xRangeFinish, yRangeStart, yRangeFinish, c) {
     let index = Math.floor(this.thread.x / 3);
     let colorIndex = this.thread.x % 3;
-    let x = Math.floor(index % this.constants.width);
+    let x = index % this.constants.width;
     let y = Math.floor(index / this.constants.width);
 
     let a = ((xRangeFinish - xRangeStart) * x / (this.constants.width - 1)) + xRangeStart;
@@ -159,9 +160,12 @@ const juliaSet = gpu.createKernel(function (xRangeStart, xRangeFinish, yRangeSta
 
 fs.mkdirSync(`./output/${now}`);
 
+let progress = new SingleBar({}, Presets.shades_classic)
+progress.start(nImages, 0)
+
 for (let images = 0; images < nImages; images++) {
     range.recalc(xOff, yOff)
-    console.log(`Calculating ${maxIterations} iterations for ${width * height} pixels. Image ${images + 1}/${nImages}`)
+    // console.log(`Calculating ${maxIterations} iterations for ${width * height} pixels. Image ${images + 1}/${nImages}`)
     let c = complexFromAngle((images / nImages) * 2 * Math.PI)
 
     // let f = juliaSet.toString(range.x.min, range.x.max, range.y.min, range.y.max, c)
@@ -169,9 +173,7 @@ for (let images = 0; images < nImages; images++) {
     // break
 
     let output = juliaSet(range.x.min, range.x.max, range.y.min, range.y.max, c)
-    // console.log(output)
-    // break
-    console.log('       Done Generating... Creating image')
+    // console.log('       Done Generating... Creating image')
 
     let pngObj = {
         width: width,
@@ -181,21 +183,22 @@ for (let images = 0; images < nImages; images++) {
         channels: 3
     }
     let encodedArr = PNG.encode(pngObj);
-    console.log(encodedArr)
-    break
     let imageNumber = images.toString().padStart(padLen, '0')
     fs.writeFileSync(`./output/${now}/out${imageNumber}.png`, encodedArr);
-    console.log('       Image created');
+    // console.log('       Image created');
+
+    progress.update(images)
 }
+progress.stop()
 
-// console.log("Generating video...")
+console.log("Generating video...")
 
-// exec(`ffmpeg -i ./output/${now}/out%0${padLen}d.png -c:v libx264 -r 30 ./output/${now}/out-video.mp4`, (error, stdout, stderr) => {
-//     if (error) console.error(stderr, error)
-//     else {
-//         console.log(`Video generated: ./output/${now}/out-video.mp4`)
-//     }
-// })
+exec(`ffmpeg -i ./output/${now}/out%0${padLen}d.png -c:v libx264 -r 30 ./output/${now}/out-video.mp4`, (error, stdout, stderr) => {
+    if (error) console.error(stderr, error)
+    else {
+        console.log(`Video generated: ./output/${now}/out-video.mp4`)
+    }
+})
 
 
-setTimeout(() => { }, 1000000)
+// setTimeout(() => { }, 1000000)

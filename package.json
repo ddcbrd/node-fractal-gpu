@@ -18,6 +18,7 @@
     "yargs": "^15.4.1"
   },
   "devDependencies": {
+    "cli-progress": "^3.8.2",
     "gpu.js": "^2.10.0"
   }
 }
